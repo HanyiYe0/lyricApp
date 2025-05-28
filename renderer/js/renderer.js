@@ -136,7 +136,8 @@ class LyricsPlayer {
         // Background text
         lyricBackgroundElement.className = 'lyric-background';
         var backgroundText = lyric.text.split(" ").pop()
-        
+        backgroundText = backgroundText.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, '').replace(/\s+/g, ' ');
+        backgroundText = backgroundText.charAt(0).toUpperCase() + backgroundText.slice(1).toLowerCase();
         lyricBackgroundElement.textContent = backgroundText;
         this.lyricsDisplay.appendChild(lyricBackgroundElement);
         this.lyricsDisplay.appendChild(lyricElement);
