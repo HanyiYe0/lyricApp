@@ -19,7 +19,6 @@ body {
     padding: 2rem;
     text-align: center;
     position: relative;
-    z-index: 1;
 }
 
 /* Header */
@@ -57,6 +56,7 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     margin-right: 1rem;
+    position: relative;
 }
 
 .play-btn:hover {
@@ -93,10 +93,11 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    display: flex
+    display: flex;
 }
 
 .lyric-background {
+    pointer-events: none;
     position: absolute;
     font-size: 20rem;
     color: rgba(0, 0, 0, 0.047);
@@ -106,7 +107,7 @@ body {
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     line-height: 1.4;
     display: flex;
-
+    /* Make text unselectable */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -130,6 +131,7 @@ body {
 
 
 .lyric-line {
+    pointer-events: none;
     position: absolute;
     font-size: 5.0rem;
     color: rgba(255, 255, 255, 0.6);
@@ -139,7 +141,7 @@ body {
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     line-height: 1.4;
     display: flex;
-
+    /* Make text unselectable */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
