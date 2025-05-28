@@ -1,0 +1,25 @@
+{
+  "name": "lyricanimator",
+  "productName": "Lyric Animator",
+  "version": "1.0.0",
+  "description": "App that displays animated lyrics",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HanyiYe0/LyricAnimator.git"
+  },
+  "author": "Hanyi Ye",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HanyiYe0/LyricAnimator/issues"
+  },
+  "homepage": "https://github.com/HanyiYe0/LyricAnimator#readme",
+  "dependencies": {
+    "animejs": "^4.0.2",
+    "electron": "^36.3.1",
+    "toastify-js": "^1.12.0"
+  }
+}

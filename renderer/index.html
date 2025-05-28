@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Lyrics Player</title>
+    <link rel="stylesheet" href="css/mainPageStyle.css">
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.ripples/0.5.3/jquery.ripples.min.js" referrerpolicy="no-referrer"></script>    
+    <script src="js/renderer.js"></script>
+    <div class="container">
+        <div class="header">
+            <h1 class="song-title">Die With A Smile</h1>
+            <p class="artist-name">by Lady Gaga, Bruno Mars</p>
+        </div>
+
+        <div class="controls">
+            <button class="play-btn" id="playBtn">▶ Play</button>
+            <button class="reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+
+        <div class="lyrics-container" id="lyrics-container">
+            <div id="lyricBackground" class="lyric-background"></div>
+            <div id="lyricsDisplay" class="lyrics-display"></div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+    <audio id="audio">
+        <source src=".\songs\test2.mp3" type="audio/mpeg">
+    </audio>
+</body>
+</html>
