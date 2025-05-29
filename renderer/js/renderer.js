@@ -50,6 +50,7 @@ class LyricsPlayer {
         // Lyric Management
         this.currentIndex = 0;
         this.isPlaying = false;
+        this.callFadeIn = true;
 
         // Dom Stuff
         this.playBtn = document.getElementById('playBtn');
@@ -109,6 +110,7 @@ class LyricsPlayer {
         this.audio.pause();
         this.audio.currentTime = 0
 
+        this.callFadeIn = true;
         this.currentIndex = 0;
         this.elapsedTime = 0;
         this.playBtn.textContent = '▶ Play';
@@ -117,7 +119,7 @@ class LyricsPlayer {
     }
 
     startAnimation() {
-        this.displayLyric(this.currentIndex);
+        this.displayLyric(this.getCurrentIndex());
         this.startProgressBar();
     }
 
@@ -131,9 +133,6 @@ class LyricsPlayer {
 
         const lyric = this.lyrics[index];
         
-        // Clear main lyrics only
-        this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
-        this.lyricsDisplay.querySelectorAll('.lyric-background').forEach(el => el.remove());
 
         // Create and add new lyric line
         const lyricElement = document.createElement('div');
@@ -147,18 +146,25 @@ class LyricsPlayer {
         backgroundText = backgroundText.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, '').replace(/\s+/g, ' ');
         backgroundText = backgroundText.charAt(0).toUpperCase() + backgroundText.slice(1).toLowerCase();
         lyricBackgroundElement.textContent = backgroundText;
-        this.lyricsDisplay.appendChild(lyricBackgroundElement);
-        this.lyricsDisplay.appendChild(lyricElement);
         
-        // Schedule next lyric       
-        this.getCurrentIndex()
-        // Trigger fade in animation
-        setTimeout(() => {
-            lyricElement.classList.add('active');
-            lyricBackgroundElement.classList.add('active');
-        }, 100);
 
+        // Clear main lyrics only
+        if (this.callFadeIn) {
+            this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
+            this.lyricsDisplay.querySelectorAll('.lyric-background').forEach(el => el.remove());
+            this.lyricsDisplay.appendChild(lyricBackgroundElement);
+            this.lyricsDisplay.appendChild(lyricElement);
+            // Trigger fade in animation on at start
+            setTimeout(() => {
+                lyricElement.classList.add('active');
+                lyricBackgroundElement.classList.add('active');
+            }, 100);
+            //this.callFadeIn = false;
+        }
         
+
+
+        // Schedule next lyric       
         var timeLeft = 0 
         for (var i = 0; i < this.currentIndex + 1; i++) {
             timeLeft += this.lyrics[i].duration
@@ -167,23 +173,25 @@ class LyricsPlayer {
         console.log(timeLeft)
         console.log(this.currentIndex)
         console.log(this.elapsedTime)
-        if (timeLeft <= 500) {
+        if (timeLeft <= 500 && this.callFadeIn) {
+            console.log('entering')
             if (this.isPlaying) {
                 lyricElement.classList.add('fadeout');
                 lyricBackgroundElement.classList.add('fadeout');
                 this.currentTimeout = setTimeout(() => {
-                    this.getCurrentIndex()
-                    this.displayLyric(this.currentIndex);
+                    this.displayLyric(this.getCurrentIndex());
                 }, timeLeft);
             }
         } else { 
+            console.log('here')
+            this.callFadeIn = false;
             this.currentTimeout = setTimeout(() => {
                 if (this.isPlaying) {
+                    this.callFadeIn = true;
                     lyricElement.classList.add('fadeout');
                     lyricBackgroundElement.classList.add('fadeout');
                     setTimeout(() => {
-                        this.getCurrentIndex()
-                        this.displayLyric(this.currentIndex);
+                        this.displayLyric(this.getCurrentIndex());
                     }, 500);
                 }
             }, timeLeft - 500);
@@ -197,12 +205,12 @@ class LyricsPlayer {
         for (let i = 0; i < this.lyrics.length; i++) {
             if (i === this.lyrics.length - 1) {
                 this.currentIndex = i
-                return
+                return this.currentIndex
             }
             after += this.lyrics[i].duration
             if (this.elapsedTime >= before && this.elapsedTime <= after) {
                 this.currentIndex = i
-                return;
+                return this.currentIndex;
             } 
             before += this.lyrics[i].duration
         }
