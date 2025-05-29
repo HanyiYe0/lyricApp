@@ -46,17 +46,23 @@ class LyricsPlayer {
             { text: '', duration: 7800 }
         ];
 
+        
+        // Lyric Management
         this.currentIndex = 0;
         this.isPlaying = false;
-        this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
-        this.elapsedTime = 0;
-        
+
+        // Dom Stuff
         this.playBtn = document.getElementById('playBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.lyricsDisplay = document.getElementById('lyrics-container');
         this.lyricBackground = document.getElementById('lyricBackground');
         this.progressBar = document.getElementById('progressBar');
         this.audio = document.getElementById('audio');
+
+
+        // For progress bar
+        this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
+        this.elapsedTime = this.audio.currentTime * 1000;
 
         this.bindEvents();
         this.reset();
@@ -80,6 +86,7 @@ class LyricsPlayer {
         this.isPlaying = true;
         this.playBtn.textContent = '⏸ Pause';
         this.playBtn.classList.add('playing');
+        this.elapsedTime = this.audio.currentTime * 1000;
         this.startAnimation();
     }
 
@@ -88,6 +95,7 @@ class LyricsPlayer {
         this.isPlaying = false;
         this.playBtn.textContent = '▶ Play';
         this.playBtn.classList.remove('playing');
+        this.elapsedTime = this.audio.currentTime * 1000;
         if (this.currentTimeout) {
             clearTimeout(this.currentTimeout);
         }
@@ -142,32 +150,69 @@ class LyricsPlayer {
         this.lyricsDisplay.appendChild(lyricBackgroundElement);
         this.lyricsDisplay.appendChild(lyricElement);
         
-
-        // Trigger animation
+        // Schedule next lyric       
+        this.getCurrentIndex()
+        // Trigger fade in animation
         setTimeout(() => {
             lyricElement.classList.add('active');
             lyricBackgroundElement.classList.add('active');
         }, 100);
 
-        // Schedule next lyric
-        this.currentTimeout = setTimeout(() => {
+        
+        var timeLeft = 0 
+        for (var i = 0; i < this.currentIndex + 1; i++) {
+            timeLeft += this.lyrics[i].duration
+        }
+        timeLeft = timeLeft - this.elapsedTime
+        console.log(timeLeft)
+        console.log(this.currentIndex)
+        console.log(this.elapsedTime)
+        if (timeLeft <= 500) {
             if (this.isPlaying) {
                 lyricElement.classList.add('fadeout');
                 lyricBackgroundElement.classList.add('fadeout');
-                setTimeout(() => {
-                    this.currentIndex++;
+                this.currentTimeout = setTimeout(() => {
+                    this.getCurrentIndex()
                     this.displayLyric(this.currentIndex);
-                }, 500);
+                }, timeLeft);
             }
-        }, lyric.duration - 500);
+        } else { 
+            this.currentTimeout = setTimeout(() => {
+                if (this.isPlaying) {
+                    lyricElement.classList.add('fadeout');
+                    lyricBackgroundElement.classList.add('fadeout');
+                    setTimeout(() => {
+                        this.getCurrentIndex()
+                        this.displayLyric(this.currentIndex);
+                    }, 500);
+                }
+            }, timeLeft - 500);
+        }
     }
-    startProgressBar() {
-        const startTime = Date.now() - this.elapsedTime;
-        
+
+    getCurrentIndex() {
+        let before = 0
+        let after = 0
+        //let sum = 0
+        for (let i = 0; i < this.lyrics.length; i++) {
+            if (i === this.lyrics.length - 1) {
+                this.currentIndex = i
+                return
+            }
+            after += this.lyrics[i].duration
+            if (this.elapsedTime >= before && this.elapsedTime <= after) {
+                this.currentIndex = i
+                return;
+            } 
+            before += this.lyrics[i].duration
+        }
+    }
+
+    startProgressBar() {        
         this.progressInterval = setInterval(() => {
             if (!this.isPlaying) return;
             
-            this.elapsedTime = Date.now() - startTime;
+            this.elapsedTime = this.audio.currentTime * 1000;
             const progress = Math.min((this.elapsedTime / this.totalDuration) * 100, 100);
             this.progressBar.style.width = progress + '%';
             
