@@ -51,7 +51,6 @@ class LyricsPlayer {
         this.currentIndex = 0;
         this.isPlaying = false;
         this.callFadeIn = true;
-        this.startAudio = true;
         this.timeLeft = this.lyrics[0].duration;
 
         // Dom Stuff
@@ -64,7 +63,6 @@ class LyricsPlayer {
 
         // For progress bar
         this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
-        this.elapsedTime = this.audio.currentTime * 1000;
 
         // Add these properties
         this.startTimestamp = 0;
@@ -131,9 +129,7 @@ class LyricsPlayer {
         this.audio.currentTime = 0
 
         this.callFadeIn = true;
-        this.startAudio = true;
         this.currentIndex = 0;
-        this.elapsedTime = 0;
         this.playBtn.textContent = '▶ Play';
         this.playBtn.classList.remove('playing');
         this.progressBar.style.width = '0%';
@@ -154,15 +150,19 @@ class LyricsPlayer {
         // Calculate actual elapsed time accounting for pauses
         const effectiveElapsed = now - this.startTimestamp - this.pausedDuration;
         const elapsedMs = effectiveElapsed;
-        console.log(elapsedMs)
+        //console.log(this.timeLeft)
         // Update current index based on actual elapsed time
         this.updateCurrentIndex(elapsedMs);
-        
+
         // Display current lyric
         const lyric = this.lyrics[this.currentIndex];
         this.timeLeft = lyric.duration;
         if (!lyric) return;
         
+        let timeLeft = 0
+        for (let i = 0; i < this.currentIndex + 1; i++) {
+            timeLeft += this.lyrics[i].duration;
+        }
 
         // Create and add new lyric line
         const lyricElement = document.createElement('div');
@@ -188,14 +188,15 @@ class LyricsPlayer {
             setTimeout(() => {
                 lyricElement.classList.add('active');
                 lyricBackgroundElement.classList.add('active');
-            }, 100);
+            }, 50);
             this.callFadeIn = false;
         }
 
 
-        if (elapsedMs >= (this.timeLeft - 500) && this.isPlaying) {
+        if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
             lyricElement.classList.add('fadeout');
             lyricBackgroundElement.classList.add('fadeout');
+            console.log(timeLeft)
         }
 
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
