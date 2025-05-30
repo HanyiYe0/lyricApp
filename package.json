@@ -20,6 +20,7 @@
   "dependencies": {
     "animejs": "^4.0.2",
     "electron": "^36.3.1",
+    "nanotimer": "^0.3.15",
     "toastify-js": "^1.12.0"
   }
 }

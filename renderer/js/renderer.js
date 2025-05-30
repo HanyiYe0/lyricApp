@@ -1,7 +1,7 @@
 class LyricsPlayer {
     constructor() {
         this.lyrics = [
-            { text: ' ', duration: 3760 },
+            { text: ' ~ ', duration: 3760 },
             { text: '(Ooh, ooh)', duration: 5480 },
             { text: 'I, I just woke up from a dream', duration: 6370 },
             { text: 'Where you and I had to say goodbye', duration: 4960 },
@@ -51,6 +51,8 @@ class LyricsPlayer {
         this.currentIndex = 0;
         this.isPlaying = false;
         this.callFadeIn = true;
+        this.startAudio = true;
+        this.timeLeft = this.lyrics[0].duration;
 
         // Dom Stuff
         this.playBtn = document.getElementById('playBtn');
@@ -60,10 +62,14 @@ class LyricsPlayer {
         this.progressBar = document.getElementById('progressBar');
         this.audio = document.getElementById('audio');
 
-
         // For progress bar
         this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
         this.elapsedTime = this.audio.currentTime * 1000;
+
+        // Add these properties
+        this.startTimestamp = 0;
+        this.pausedDuration = 0;
+        this.lastUpdateTime = 0;
 
         this.bindEvents();
         this.reset();
@@ -83,25 +89,39 @@ class LyricsPlayer {
     }
 
     play() {
-        this.audio.play()
-        this.isPlaying = true;
-        this.playBtn.textContent = '⏸ Pause';
-        this.playBtn.classList.add('playing');
-        this.elapsedTime = this.audio.currentTime * 1000;
-        this.startAnimation();
+        if (!this.isPlaying) {
+            this.audio.play();
+            this.isPlaying = true;
+            this.playBtn.textContent = '⏸ Pause';
+            this.playBtn.classList.add('playing');
+            
+            // Reset timing markers if starting from beginning
+            if (this.audio.currentTime === 0) {
+                this.startTimestamp = performance.now();
+                this.pausedDuration = 0;
+                this.currentIndex = 0;
+            }
+            
+            this.startAnimation();
+            this.startProgressBar();
+        }
     }
 
     pause() {
-        this.audio.pause()
-        this.isPlaying = false;
-        this.playBtn.textContent = '▶ Play';
-        this.playBtn.classList.remove('playing');
-        this.elapsedTime = this.audio.currentTime * 1000;
-        if (this.currentTimeout) {
-            clearTimeout(this.currentTimeout);
-        }
-        if (this.progressInterval) {
-            clearInterval(this.progressInterval);
+        if (this.isPlaying) {
+            this.audio.pause();
+            this.isPlaying = false;
+            this.playBtn.textContent = '▶ Play';
+            this.playBtn.classList.remove('playing');
+            
+            // Clear any pending timeouts
+            if (this.animationFrame) {
+                cancelAnimationFrame(this.animationFrameLyrics);
+                cancelAnimationFrame(this.animationFrameProgressBar)
+            }
+            
+            // Record how long we've been paused
+            this.pausedDuration += performance.now() - this.lastUpdateTime;
         }
     }
 
@@ -111,6 +131,7 @@ class LyricsPlayer {
         this.audio.currentTime = 0
 
         this.callFadeIn = true;
+        this.startAudio = true;
         this.currentIndex = 0;
         this.elapsedTime = 0;
         this.playBtn.textContent = '▶ Play';
@@ -119,19 +140,28 @@ class LyricsPlayer {
     }
 
     startAnimation() {
-        this.displayLyric(this.getCurrentIndex());
+        this.startAudio = true;
+        this.displayLyric(this.currentIndex);
         this.startProgressBar();
     }
 
-    displayLyric(index) {
-        if (!this.isPlaying || index >= this.lyrics.length) {
-            if (index >= this.lyrics.length) {
-                this.onComplete();
-            }
-            return;
-        }
-
-        const lyric = this.lyrics[index];
+    displayLyric() {
+        if (!this.isPlaying) return;
+        
+        const now = performance.now();
+        this.lastUpdateTime = now;
+        
+        // Calculate actual elapsed time accounting for pauses
+        const effectiveElapsed = now - this.startTimestamp - this.pausedDuration;
+        const elapsedMs = effectiveElapsed;
+        console.log(elapsedMs)
+        // Update current index based on actual elapsed time
+        this.updateCurrentIndex(elapsedMs);
+        
+        // Display current lyric
+        const lyric = this.lyrics[this.currentIndex];
+        this.timeLeft = lyric.duration;
+        if (!lyric) return;
         
 
         // Create and add new lyric line
@@ -159,75 +189,59 @@ class LyricsPlayer {
                 lyricElement.classList.add('active');
                 lyricBackgroundElement.classList.add('active');
             }, 100);
-            //this.callFadeIn = false;
-        }
-        
-
-
-        // Schedule next lyric       
-        var timeLeft = 0 
-        for (var i = 0; i < this.currentIndex + 1; i++) {
-            timeLeft += this.lyrics[i].duration
-        }
-        timeLeft = timeLeft - this.elapsedTime
-        console.log(timeLeft)
-        console.log(this.currentIndex)
-        console.log(this.elapsedTime)
-        if (timeLeft <= 500 && this.callFadeIn) {
-            console.log('entering')
-            if (this.isPlaying) {
-                lyricElement.classList.add('fadeout');
-                lyricBackgroundElement.classList.add('fadeout');
-                this.currentTimeout = setTimeout(() => {
-                    this.displayLyric(this.getCurrentIndex());
-                }, timeLeft);
-            }
-        } else { 
-            console.log('here')
             this.callFadeIn = false;
-            this.currentTimeout = setTimeout(() => {
-                if (this.isPlaying) {
-                    this.callFadeIn = true;
-                    lyricElement.classList.add('fadeout');
-                    lyricBackgroundElement.classList.add('fadeout');
-                    setTimeout(() => {
-                        this.displayLyric(this.getCurrentIndex());
-                    }, 500);
-                }
-            }, timeLeft - 500);
         }
+
+
+        if (elapsedMs >= (this.timeLeft - 500) && this.isPlaying) {
+            lyricElement.classList.add('fadeout');
+            lyricBackgroundElement.classList.add('fadeout');
+        }
+
+        this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
+        
     }
 
-    getCurrentIndex() {
-        let before = 0
-        let after = 0
-        //let sum = 0
+    updateCurrentIndex(elapsedMs) {
+        let cumulativeTime = 0;
+        let newIndex = 0;
+        
         for (let i = 0; i < this.lyrics.length; i++) {
-            if (i === this.lyrics.length - 1) {
-                this.currentIndex = i
-                return this.currentIndex
+            cumulativeTime += this.lyrics[i].duration;
+            
+            if (elapsedMs <= cumulativeTime) {
+                newIndex = i;
+                break;
             }
-            after += this.lyrics[i].duration
-            if (this.elapsedTime >= before && this.elapsedTime <= after) {
-                this.currentIndex = i
-                return this.currentIndex;
-            } 
-            before += this.lyrics[i].duration
+            if (i === this.lyrics.length - 1) {
+                newIndex = i;
+                break;
+            }
+        }
+        if (newIndex !== this.currentIndex) {
+            this.currentIndex = newIndex;
+            this.callFadeIn = true;
         }
     }
 
     startProgressBar() {        
-        this.progressInterval = setInterval(() => {
-            if (!this.isPlaying) return;
-            
-            this.elapsedTime = this.audio.currentTime * 1000;
-            const progress = Math.min((this.elapsedTime / this.totalDuration) * 100, 100);
-            this.progressBar.style.width = progress + '%';
-            
-            if (progress >= 100) {
-                clearInterval(this.progressInterval);
-            }
-        }, 100);
+        const now = performance.now();
+        this.lastUpdateTime = now;
+        
+        // Calculate actual elapsed time accounting for pauses
+        const effectiveElapsed = now - this.startTimestamp - this.pausedDuration;
+        const elapsedMs = effectiveElapsed;
+
+        if (!this.isPlaying) return;
+        const progress = Math.min((elapsedMs / this.totalDuration) * 100, 100);
+        this.progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+            clearInterval(this.progressInterval);
+        }
+
+        this.animationFrameProgressBar = requestAnimationFrame(() => this.startProgressBar());
+
     }
 
     onComplete() {
