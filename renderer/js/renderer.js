@@ -64,7 +64,7 @@ class LyricsPlayer {
         // For progress bar
         this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
 
-        // Add these properties
+        // Time Management 
         this.startTimestamp = 0;
         this.pausedDuration = 0;
         this.lastUpdateTime = 0;
@@ -92,7 +92,10 @@ class LyricsPlayer {
             this.isPlaying = true;
             this.playBtn.textContent = '⏸ Pause';
             this.playBtn.classList.add('playing');
-            
+
+            // Get pause duration
+            this.pausedDuration += performance.now() - this.lastUpdateTime;
+
             // Reset timing markers if starting from beginning
             if (this.audio.currentTime === 0) {
                 this.startTimestamp = performance.now();
@@ -112,14 +115,14 @@ class LyricsPlayer {
             this.playBtn.textContent = '▶ Play';
             this.playBtn.classList.remove('playing');
             
-            // Clear any pending timeouts
+            // Clear animation frames
             if (this.animationFrame) {
                 cancelAnimationFrame(this.animationFrameLyrics);
                 cancelAnimationFrame(this.animationFrameProgressBar)
             }
             
             // Record how long we've been paused
-            this.pausedDuration += performance.now() - this.lastUpdateTime;
+            this.lastUpdateTime = performance.now()
         }
     }
 
