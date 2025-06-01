@@ -34,7 +34,7 @@ class LyricsPlayer {
             { text: 'Next to you', duration: 4450 },
             { text: 'Right next to you', duration: 4040 },
             { text: 'Oh', duration: 2480 },
-            { text: '', duration: 16570 },
+            { text: '~', duration: 16570 },
             { text: "If the world was ending, I'd wanna be next to you", duration: 9130 },
             { text: 'If the party was over and our time on earth was through', duration: 8900 },
             { text: "I'd wanna hold you just for a while", duration: 4990 },
@@ -43,7 +43,7 @@ class LyricsPlayer {
             { text: "If the world was ending, I'd wanna be next to you", duration: 9870 },
             { text: '(Ooh, ooh)', duration: 2600 },
             { text: "I'd wanna be next to you", duration: 3690 },
-            { text: '', duration: 7800 }
+            { text: '~', duration: 7800 }
         ];
 
         
@@ -191,14 +191,18 @@ class LyricsPlayer {
             setTimeout(() => {
                 lyricElement.classList.add('active');
                 lyricBackgroundElement.classList.add('active');
-            }, 50);
+            }, 100);
             this.callFadeIn = false;
         }
 
 
         if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
-            lyricElement.classList.add('fadeout');
-            lyricBackgroundElement.classList.add('fadeout');
+            if (!lyricElement.classList.contains('fadeout')) {
+                lyricElement.classList.add('fadeout');
+            }
+            if (!lyricBackgroundElement.classList.contains('fadeout')) {
+                lyricBackgroundElement.classList.add('fadeout');
+            }
             console.log(timeLeft)
         }
 
@@ -280,4 +284,4 @@ $('body').ripples({
 const interval = setInterval(() => {
    $('body').ripples('drop', 20, 500, 20, 0.4);
     $('body').ripples('drop', 1980, 500, 20, 0.4);
- }, 5000);
+ }, 3000);

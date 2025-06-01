@@ -54,7 +54,7 @@ function generateLyrics(lyricsTimestamp) {
         //console.log(lyric)
         seconds = parseInt(timestamp.substring(1, 3)) * 60 + parseFloat(timestamp.substring(4, 9))
         if (output.length === 0) {
-            dictInput = { text: ' ', duration: Math.round(seconds * 1000)}
+            dictInput = { text: '~', duration: Math.round(seconds * 1000)}
             prevSeconds = seconds
             prevLyric = lyric
             //dictInput = {text: lyric, duration: Math.round(seconds * 1000)}
