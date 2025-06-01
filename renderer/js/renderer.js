@@ -197,13 +197,12 @@ class LyricsPlayer {
 
 
         if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
-            if (!lyricElement.classList.contains('fadeout')) {
-                lyricElement.classList.add('fadeout');
+            if (!this.lyricsDisplay.querySelector('.lyric-line').classList.contains('fadeout')) {
+                this.lyricsDisplay.querySelector('.lyric-line').classList.add('fadeout')
             }
-            if (!lyricBackgroundElement.classList.contains('fadeout')) {
-                lyricBackgroundElement.classList.add('fadeout');
+            if (!this.lyricsDisplay.querySelector('.lyric-background').classList.contains('fadeout')) {
+                this.lyricsDisplay.querySelector('.lyric-background').classList.add('fadeout')
             }
-            console.log(timeLeft)
         }
 
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
