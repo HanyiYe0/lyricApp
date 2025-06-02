@@ -131,6 +131,9 @@ class LyricsPlayer {
         this.audio.pause();
         this.audio.currentTime = 0
 
+        // Clear html elements
+        this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
+        this.lyricsDisplay.querySelectorAll('.lyric-background').forEach(el => el.remove());
         this.callFadeIn = true;
         this.currentIndex = 0;
         this.playBtn.textContent = '▶ Play';
@@ -273,6 +276,11 @@ document.addEventListener('DOMContentLoaded', () => {
     new LyricsPlayer();
 });
 
+function initLyricAnimation(lyricData) {
+    var lyricPlayer = new LyricsPlayer();
+    lyricPlayer.lyrics = lyricData
+}
+
 $('body').ripples({
   resolution: 1024,    // internal WebGL texture size
   dropRadius: 40,     // radius of each drop (px)
@@ -280,7 +288,14 @@ $('body').ripples({
   interactive: false
 });
 
-const interval = setInterval(() => {
-   $('body').ripples('drop', 20, 500, 20, 0.4);
-    $('body').ripples('drop', 1980, 500, 20, 0.4);
- }, 3000);
+// const interval = setInterval(() => {
+//     var x1 = Math.random() * 2000
+//     var y1 = Math.random() * 1000
+
+//     $('body').ripples('drop', x1, y1, 20, 0.4);
+
+//     var x2 = Math.random() * 2000
+//     var y2 = Math.random() * 1000
+
+//     $('body').ripples('drop', x2, y2, 10, 0.6);
+//  }, 10000);
