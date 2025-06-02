@@ -1,4 +1,4 @@
-class LyricsPlayer {
+window.LyricsPlayer = class {
     constructor() {  
         // Lyric Management
         this.currentIndex = 0;
@@ -220,11 +220,11 @@ class LyricsPlayer {
     }
 }
 
-function initLyricAnimation(title, artist, lyricData) {
+window.initLyricAnimation = function(title, artist, lyricData) {
     // Load title and artist name
     document.getElementById("song-title").textContent = title;
     document.getElementById("artist-name").textContent = artist;
-    document.getElementById("audio");
+    document.getElementById("audio").src = `./songs/${title}.mp3`;
     var lyricPlayer = new LyricsPlayer();
     // Load lyrics and the first time left duration
     lyricPlayer.lyrics = lyricData

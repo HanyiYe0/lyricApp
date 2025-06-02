@@ -23,6 +23,15 @@ async function loadSong(songFile) {
 }
 
 async function switchTemplate(styleName, songData) {
+  // Remove LyricsPlayer class
+  if (typeof window.LyricsPlayer !== 'undefined') {
+    delete window.LyricsPlayer;
+  }
+  
+  // Remove the init function
+  if (typeof window.initLyricAnimation !== 'undefined') {
+    delete window.initLyricAnimation;
+  }
   // 1. Fetch and inject HTML
   const html = await fetch(`./templates/${styleName}/template.html`)
                      .then(r => r.text());
@@ -44,6 +53,7 @@ async function switchTemplate(styleName, songData) {
 document.addEventListener('DOMContentLoaded', async () => {
   console.log(select.value)
   var songData = await loadSong(select.value);
+  // Delete LyricsPlayer if already existing
   switchTemplate(switcher.value, songData);
 });
 
