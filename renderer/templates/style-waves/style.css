@@ -179,7 +179,7 @@ body {
 
 .progress-bar {    
     height: 100%;
-    background: linear-gradient(90deg, #c3c3c3, #3c3c3c);
+    background: linear-gradient(90deg, #0026ff41, #0026ff);
     width: 0%;
     transition: width 0.1s linear;
     border-radius: 3px;

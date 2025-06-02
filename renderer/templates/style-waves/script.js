@@ -226,7 +226,7 @@ function initLyricAnimation(lyricData) {
     lyricPlayer.lyrics = lyricData
     lyricPlayer.timeLeft = lyricPlayer.lyrics[0].duration;
     // For progress bar
-    this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
+    lyricPlayer.totalDuration = lyricPlayer.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
 }
 
 $('body').ripples({
