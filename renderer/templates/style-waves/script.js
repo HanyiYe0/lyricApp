@@ -1,57 +1,9 @@
 class LyricsPlayer {
-    constructor() {
-        this.lyrics = [
-            { text: ' ~ ', duration: 3760 },
-            { text: '(Ooh, ooh)', duration: 5480 },
-            { text: 'I, I just woke up from a dream', duration: 6370 },
-            { text: 'Where you and I had to say goodbye', duration: 4960 },
-            { text: "And I don't know what it all means", duration: 3950 },
-            { text: 'But since I survived, I realized', duration: 4810 },
-            { text: "Wherever you go, that's where I'll follow", duration: 4710 },
-            { text: "Nobody's promised tomorrow", duration: 4400 },
-            { text: "So, I'ma love you every night like it's the last night", duration: 4070 },
-            { text: "Like it's the last night", duration: 2240 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 9340 },
-            { text: 'If the party was over and our time on earth was through', duration: 8840 },
-            { text: "I'd wanna hold you just for a while", duration: 5340 },
-            { text: 'And die with a smile', duration: 4090 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 8630 },
-            { text: '(Ooh, ooh)', duration: 4330 },
-            { text: 'Ooh, lost, lost in the words that we scream', duration: 7950 },
-            { text: "I don't even wanna do this anymore", duration: 4610 },
-            { text: "'Cause you already know what you mean to me", duration: 3470 },
-            { text: "And our love's the only war worth fighting for", duration: 5720 },
-            { text: "Wherever you go, that's where I'll follow", duration: 4430 },
-            { text: "Nobody's promised tomorrow", duration: 4370 },
-            { text: "So, I'ma love you every night like it's the last night", duration: 3960 },
-            { text: "Like it's the last night", duration: 2370 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 8970 },
-            { text: 'If the party was over and our time on earth was through', duration: 9180 },
-            { text: "I'd wanna hold you just for a while", duration: 5280 },
-            { text: 'And die with a smile', duration: 4170 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 8860 },
-            { text: 'Right next to you', duration: 4560 },
-            { text: 'Next to you', duration: 4450 },
-            { text: 'Right next to you', duration: 4040 },
-            { text: 'Oh', duration: 2480 },
-            { text: '~', duration: 16570 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 9130 },
-            { text: 'If the party was over and our time on earth was through', duration: 8900 },
-            { text: "I'd wanna hold you just for a while", duration: 4990 },
-            { text: 'And die with a smile', duration: 4320 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 8940 },
-            { text: "If the world was ending, I'd wanna be next to you", duration: 9870 },
-            { text: '(Ooh, ooh)', duration: 2600 },
-            { text: "I'd wanna be next to you", duration: 3690 },
-            { text: '~', duration: 7800 }
-        ];
-
-        
+    constructor() {  
         // Lyric Management
         this.currentIndex = 0;
         this.isPlaying = false;
         this.callFadeIn = true;
-        this.timeLeft = this.lyrics[0].duration;
 
         // Dom Stuff
         this.playBtn = document.getElementById('playBtn');
@@ -60,9 +12,6 @@ class LyricsPlayer {
         this.lyricBackground = document.getElementById('lyricBackground');
         this.progressBar = document.getElementById('progressBar');
         this.audio = document.getElementById('audio');
-
-        // For progress bar
-        this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
 
         // Time Management 
         this.startTimestamp = 0;
@@ -271,14 +220,13 @@ class LyricsPlayer {
     }
 }
 
-// Initialize the lyrics player when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    new LyricsPlayer();
-});
-
 function initLyricAnimation(lyricData) {
     var lyricPlayer = new LyricsPlayer();
+    // Load lyrics and the first time left duration
     lyricPlayer.lyrics = lyricData
+    lyricPlayer.timeLeft = lyricPlayer.lyrics[0].duration;
+    // For progress bar
+    this.totalDuration = this.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
 }
 
 $('body').ripples({
