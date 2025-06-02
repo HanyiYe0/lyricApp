@@ -1,46 +1,37 @@
-const lyricsTimestamp = `[00:03.76] (Ooh, ooh)
-[00:09.24] I, I just woke up from a dream
-[00:15.61] Where you and I had to say goodbye
-[00:20.57] And I don't know what it all means
-[00:24.52] But since I survived, I realized
-[00:29.33] Wherever you go, that's where I'll follow
-[00:34.04] Nobody's promised tomorrow
-[00:38.44] So, I'ma love you every night like it's the last night
-[00:42.51] Like it's the last night
-[00:44.75] If the world was ending, I'd wanna be next to you
-[00:54.09] If the party was over and our time on earth was through
-[01:02.93] I'd wanna hold you just for a while
-[01:08.27] And die with a smile
-[01:12.36] If the world was ending, I'd wanna be next to you
-[01:20.99] (Ooh, ooh)
-[01:25.32] Ooh, lost, lost in the words that we scream
-[01:33.27] I don't even wanna do this anymore
-[01:37.88] 'Cause you already know what you mean to me
-[01:41.35] And our love's the only war worth fighting for
-[01:47.07] Wherever you go, that's where I'll follow
-[01:51.50] Nobody's promised tomorrow
-[01:55.87] So, I'ma love you every night like it's the last night
-[01:59.83] Like it's the last night
-[02:02.20] If the world was ending, I'd wanna be next to you
-[02:11.17] If the party was over and our time on earth was through
-[02:20.35] I'd wanna hold you just for a while
-[02:25.63] And die with a smile
-[02:29.80] If the world was ending, I'd wanna be next to you
-[02:38.66] Right next to you
-[02:43.22] Next to you
-[02:47.67] Right next to you
-[02:51.71] Oh
-[02:54.19] 
-[03:10.76] If the world was ending, I'd wanna be next to you
-[03:19.89] If the party was over and our time on earth was through
-[03:28.79] I'd wanna hold you just for a while
-[03:33.78] And die with a smile
-[03:38.10] If the world was ending, I'd wanna be next to you
-[03:47.04] If the world was ending, I'd wanna be next to you
-[03:56.91] (Ooh, ooh)
-[03:59.51] I'd wanna be next to you
-[04:03.20] `
-var songLength = 251
+const lyricsTimestamp = `[00:21.31] 瀰漫的煙散不出留在房間
+[00:26.25] 我在窗前捧著書本和茶點
+[00:31.10] 我總是失望對於自己和明天
+[00:35.48] 燈光下的微點又晃了我的眼
+[00:41.26] I'm thinking about you 耳機播放著鼓點
+[00:46.18] I can't live without you 保持我們初見時的新鮮
+[00:51.04] I'm thinking about you 找個舒適的距間
+[00:55.88] 可我的性格總讓我感覺虧欠
+[01:00.22] 不確定的地點和一個待定的時間
+[01:05.15] 我怎麼也會走進一場未知的淪陷?
+[01:10.16] 一想到你就沒有任何不適的感覺
+[01:15.01] 未來的每一天都多愛你一遍
+[01:22.55] 現在是回憶陪我在作伴
+[01:26.15] 重複的橋段裡面誰是病患
+[01:32.43] 等待著忽然間一個笑容 別打擾了我的夢
+[01:38.48] 'Cause I can't live without you
+[01:40.64] I'm thinking about you 耳機播放著鼓點
+[01:45.59] I can't live without you 保持我們初見時的新鮮
+[01:50.52] I'm thinking about you 找個舒適的距間
+[01:55.24] 可我的性格總讓我感覺虧欠
+[01:59.58] 不確定的地點和一個待定的時間
+[02:04.55] 我怎麼也會走進一場未知的淪陷?
+[02:09.43] 一想到你就沒有任何不適的感覺
+[02:14.53] 未來的每一天都多愛你一遍
+[02:20.18] I'm thinking about you 耳機播放著鼓點
+[02:25.15] I can't live without you 保持我們初見時的新鮮
+[02:30.05] I'm thinking about you 找個舒適的距間
+[02:34.98] 可我的性格總讓我感覺虧欠
+[02:39.12] 不確定的地點和一個待定的時間
+[02:44.21] 我怎麼也會走進一場未知的淪陷?
+[02:49.11] 一想到你就沒有任何不適的感覺
+[02:54.04] 未來的每一天都多愛你一遍
+[02:59.27] `
+var songLength = 183
 
 function generateLyrics(lyricsTimestamp) {
     var output = []

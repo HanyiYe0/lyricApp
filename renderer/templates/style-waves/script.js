@@ -220,7 +220,11 @@ class LyricsPlayer {
     }
 }
 
-function initLyricAnimation(lyricData) {
+function initLyricAnimation(title, artist, lyricData) {
+    // Load title and artist name
+    document.getElementById("song-title").textContent = title;
+    document.getElementById("artist-name").textContent = artist;
+    document.getElementById("audio");
     var lyricPlayer = new LyricsPlayer();
     // Load lyrics and the first time left duration
     lyricPlayer.lyrics = lyricData
