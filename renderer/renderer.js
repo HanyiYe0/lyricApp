@@ -32,6 +32,7 @@ async function switchTemplate(styleName, songData) {
   if (typeof window.initLyricAnimation !== 'undefined') {
     delete window.initLyricAnimation;
   }
+  
   // 1. Fetch and inject HTML
   const html = await fetch(`./templates/${styleName}/template.html`)
                      .then(r => r.text());
@@ -58,8 +59,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // When user picks a new one:
-switcher.addEventListener('change', () => {
-  switchTemplate(switcher.value, songData);
+switcher.addEventListener('change', async () => {
+    var songData = await loadSong(select.value)
+    // songData.lyrics is now an array—pass it into your template’s init function:
+    switchTemplate(switcher.value, songData);
 });
 
 function loadStyleCss(styleName) {
