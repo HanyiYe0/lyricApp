@@ -130,6 +130,11 @@ window.LyricsPlayer = class {
         var backgroundText = lyric.text.split(" ").pop()
         backgroundText = backgroundText.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, '').replace(/\s+/g, ' ');
         backgroundText = backgroundText.charAt(0).toUpperCase() + backgroundText.slice(1).toLowerCase();
+        
+        // Check for Chinese/Other Language characters
+        if (isChineseChar(backgroundText.charAt(0)) && backgroundText.length >= 2) {
+            backgroundText = backgroundText.charAt(backgroundText.length - 2).toUpperCase() + backgroundText.charAt(backgroundText.length - 1)
+        }
         lyricBackgroundElement.textContent = backgroundText;
         
 
@@ -239,6 +244,23 @@ $('body').ripples({
   perturbance: 0.04,   // how “wobbly” the surface is
   interactive: false
 });
+
+function isChineseChar(char) {
+    const cp = char.codePointAt(0);
+    return (
+        (0x4E00 <= cp && cp <= 0x9FFF) ||
+        (0x3400 <= cp && cp <= 0x4DBF) ||
+        (0x20000 <= cp && cp <= 0x2A6DF) ||
+        (0x2A700 <= cp && cp <= 0x2B73F) ||
+        (0x2B740 <= cp && cp <= 0x2B81F) ||
+        (0x2B820 <= cp && cp <= 0x2CEAF) ||
+        (0x2CEB0 <= cp && cp <= 0x2EBEF) ||
+        (0x30000 <= cp && cp <= 0x3134F) ||
+        (0x31350 <= cp && cp <= 0x323AF) ||
+        (0xF900 <= cp && cp <= 0xFAFF)
+    );
+}
+
 
 // const interval = setInterval(() => {
 //     var x1 = Math.random() * 2000
