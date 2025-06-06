@@ -253,3 +253,27 @@ function isChineseChar(char) {
         (0xF900 <= cp && cp <= 0xFAFF)
     );
 }
+
+
+// Grab the <feTurbulence> element:
+const turb = document.getElementById("turb");
+
+let start = null;
+function animate(timestamp) {
+    if (!start) start = timestamp;
+    const elapsed = (timestamp - start) / 1000; // seconds
+
+    // Compute a slowly changing frequency:
+    // oscillate between 0.015 and 0.035 in the x‐direction,
+    // and between 0.045 and 0.065 in the y‐direction.
+    const freqX = 0.025 + Math.sin(elapsed * 1.2) * 0.01;
+    const freqY = 0.055 + Math.cos(elapsed * 0.8) * 0.01;
+
+    // Update the feTurbulence’s baseFrequency attribute:
+    turb.setAttribute("baseFrequency", freqX + " " + freqY);
+
+    // Loop:
+    requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);

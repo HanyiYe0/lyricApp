@@ -33,3 +33,18 @@ body {
     
 }
 
+/* The text we’ll distort */
+#lyricsDisplay {
+    font-size: 5.0rem;
+    font-family: 'Arial', sans-serif;
+
+    color: #ffffff;
+    /* Make the filter affect this element */
+    filter: url(#water);
+    /* Ensure the text is rendered to SVG so filter can apply */
+    transform: translateZ(0);
+}
+
+@keyframes active {
+    
+}
