@@ -13,6 +13,8 @@ window.LyricsPlayer = class {
         this.progressBar = document.getElementById('progressBar');
         this.audio = document.getElementById('audio');
 
+
+        this.frameNumber = 0
         // Time Management 
         this.startTimestamp = 0;
         this.pausedDuration = 0;
@@ -108,7 +110,28 @@ window.LyricsPlayer = class {
         //console.log(this.timeLeft)
         // Update current index based on actual elapsed time
         this.updateCurrentIndex(elapsedMs);
+        
+        // Water animation
+        var turb = document.getElementById("turb");
+        var displ = document.getElementById("displacement")
+        if (this.callFadeIn) {
+            displ.setAttribute("scale", 15);
+        }
+        // Slow the animation speed
+        if (this.frameNumber % 5 === 0) {
+            const freqX = 0.05 + Math.sin(elapsedMs * 1.2) * 0.01;
+            const freqY = 0.11 + Math.cos(elapsedMs * 0.8) * 0.01;
 
+            // Update the feTurbulence’s baseFrequency attribute:
+            turb.setAttribute("baseFrequency", freqX + " " + freqY);
+
+            // Unblur the water effect
+            if (displ.getAttribute("scale") > 1) {
+                displ.setAttribute("scale", parseFloat(displ.getAttribute("scale")) - 1)
+            }
+            
+        }
+        
         // Display current lyric
         const lyric = this.lyrics[this.currentIndex];
         this.timeLeft = lyric.duration;
@@ -162,6 +185,7 @@ window.LyricsPlayer = class {
             }
         }
 
+        this.frameNumber++;
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
         
     }
@@ -253,27 +277,3 @@ function isChineseChar(char) {
         (0xF900 <= cp && cp <= 0xFAFF)
     );
 }
-
-
-// Grab the <feTurbulence> element:
-const turb = document.getElementById("turb");
-
-let start = null;
-function animate(timestamp) {
-    if (!start) start = timestamp;
-    const elapsed = (timestamp - start) / 1000; // seconds
-
-    // Compute a slowly changing frequency:
-    // oscillate between 0.015 and 0.035 in the x‐direction,
-    // and between 0.045 and 0.065 in the y‐direction.
-    const freqX = 0.025 + Math.sin(elapsed * 1.2) * 0.01;
-    const freqY = 0.055 + Math.cos(elapsed * 0.8) * 0.01;
-
-    // Update the feTurbulence’s baseFrequency attribute:
-    turb.setAttribute("baseFrequency", freqX + " " + freqY);
-
-    // Loop:
-    requestAnimationFrame(animate);
-}
-
-requestAnimationFrame(animate);
