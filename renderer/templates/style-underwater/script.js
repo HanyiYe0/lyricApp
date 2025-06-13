@@ -22,6 +22,11 @@ window.LyricsPlayer = class {
 
         this.bindEvents();
         this.reset();
+
+
+        // Lyric text area
+        this.pinch = -0.1
+        //this.createTextCanvas('test', this.pinch)
     }
 
     bindEvents() {
@@ -111,26 +116,7 @@ window.LyricsPlayer = class {
         // Update current index based on actual elapsed time
         this.updateCurrentIndex(elapsedMs);
         
-        // Water animation
-        var turb = document.getElementById("turb");
-        var displ = document.getElementById("displacement")
-        if (this.callFadeIn) {
-            displ.setAttribute("scale", 15);
-        }
-        // Slow the animation speed
-        if (this.frameNumber % 5 === 0) {
-            const freqX = 0.05 + Math.sin(elapsedMs * 1.2) * 0.01;
-            const freqY = 0.11 + Math.cos(elapsedMs * 0.8) * 0.01;
-
-            // Update the feTurbulence’s baseFrequency attribute:
-            turb.setAttribute("baseFrequency", freqX + " " + freqY);
-
-            // Unblur the water effect
-            if (displ.getAttribute("scale") > 1) {
-                displ.setAttribute("scale", parseFloat(displ.getAttribute("scale")) - 1)
-            }
-            
-        }
+        
         
         // Display current lyric
         const lyric = this.lyrics[this.currentIndex];
@@ -142,48 +128,27 @@ window.LyricsPlayer = class {
             timeLeft += this.lyrics[i].duration;
         }
 
+        if (this.callFadeIn) {
+            var lyricContainer = document.getElementById('lyrics-container');
+            lyricContainer.innerHTML = '';
+            this.pinch = -1
+            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
+            this.callFadeIn = false;
+
+        }
+
+        // Slow the animation speed
+        if (this.pinch < 0) {
+            var lyricContainer = document.getElementById('lyrics-container');
+            lyricContainer.innerHTML = '';
+            this.pinch += 0.15
+            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
+        }
+
         // Create and add new lyric line
         const lyricElement = document.createElement('div');
-        const lyricBackgroundElement = document.createElement('div');
         lyricElement.className = 'lyric-line';
         lyricElement.textContent = lyric.text || ' ';
-        
-        // Background text
-        lyricBackgroundElement.className = 'lyric-background';
-        var backgroundText = lyric.text.split(" ").pop()
-        backgroundText = backgroundText.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, '').replace(/\s+/g, ' ');
-        backgroundText = backgroundText.charAt(0).toUpperCase() + backgroundText.slice(1).toLowerCase();
-        
-        // Check for Chinese/Other Language characters
-        if (isChineseChar(backgroundText.charAt(0)) && backgroundText.length >= 2) {
-            backgroundText = backgroundText.charAt(backgroundText.length - 2).toUpperCase() + backgroundText.charAt(backgroundText.length - 1)
-        }
-        lyricBackgroundElement.textContent = backgroundText;
-        
-
-        // Clear main lyrics only
-        if (this.callFadeIn) {
-            this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
-            this.lyricsDisplay.querySelectorAll('.lyric-background').forEach(el => el.remove());
-            this.lyricsDisplay.appendChild(lyricBackgroundElement);
-            this.lyricsDisplay.appendChild(lyricElement);
-            // Trigger fade in animation on at start
-            setTimeout(() => {
-                lyricElement.classList.add('active');
-                lyricBackgroundElement.classList.add('active');
-            }, 100);
-            this.callFadeIn = false;
-        }
-
-
-        if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
-            if (!this.lyricsDisplay.querySelector('.lyric-line').classList.contains('fadeout')) {
-                this.lyricsDisplay.querySelector('.lyric-line').classList.add('fadeout')
-            }
-            if (!this.lyricsDisplay.querySelector('.lyric-background').classList.contains('fadeout')) {
-                this.lyricsDisplay.querySelector('.lyric-background').classList.add('fadeout')
-            }
-        }
 
         this.frameNumber++;
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
@@ -209,6 +174,7 @@ window.LyricsPlayer = class {
         if (newIndex !== this.currentIndex) {
             this.currentIndex = newIndex;
             this.callFadeIn = true;
+            this.frameNumber = 0;
         }
     }
 
@@ -247,6 +213,30 @@ window.LyricsPlayer = class {
             this.reset();
         }, 3000);
     }
+
+    createTextCanvas(lyric, pinch) {
+        var canvas = fx.canvas();
+        var textCanvas = document.createElement('canvas');
+        textCanvas.width = 2000;  // Adjust based on your needs
+        textCanvas.height = 400; // Adjust based on your needs
+        var ctx = textCanvas.getContext('2d');
+        // Draw text on the temporary canvas
+        ctx.fillStyle = '#ffffff'; // White text
+        ctx.font = 'bold 80px Arial'; // Customize font
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        console.log(lyric)
+        ctx.fillText(lyric, textCanvas.width / 2, textCanvas.height / 2);
+
+        // Convert the text canvas into a glfx texture
+        var texture = canvas.texture(textCanvas);
+        canvas.draw(texture)
+            .bulgePinch(textCanvas.width / 2, textCanvas.height / 2, 1000, pinch)
+            .update();
+        // Replace an existing element (or append to body)
+        var container = document.getElementById('lyrics-container'); // A div where you want the effect
+        container.appendChild(canvas);
+    }
 }
 
 window.initLyricAnimation = function(title, artist, lyricData) {
@@ -261,6 +251,7 @@ window.initLyricAnimation = function(title, artist, lyricData) {
     // For progress bar
     lyricPlayer.totalDuration = lyricPlayer.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
 }
+
 
 function isChineseChar(char) {
     const cp = char.codePointAt(0);

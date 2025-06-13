@@ -148,10 +148,6 @@ body {
 
 
 .lyric-line {
-    /* Make the filter affect this element */
-    filter: url(#water);
-    /* Ensure the text is rendered to SVG so filter can apply */
-    transform: translateZ(0);
     pointer-events: none;
     position: absolute;
     font-size: 5.0rem;
@@ -184,6 +180,7 @@ body {
     opacity: 0.3;
     transform: translateY(-20px);
 }
+
 
 /* Progress Bar */
 .progress-container {
