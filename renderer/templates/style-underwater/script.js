@@ -9,7 +9,6 @@ window.LyricsPlayer = class {
         this.playBtn = document.getElementById('playBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.lyricsDisplay = document.getElementById('lyrics-container');
-        this.lyricBackground = document.getElementById('lyricBackground');
         this.progressBar = document.getElementById('progressBar');
         this.audio = document.getElementById('audio');
 
@@ -22,11 +21,6 @@ window.LyricsPlayer = class {
 
         this.bindEvents();
         this.reset();
-
-
-        // Lyric text area
-        this.pinch = -0.1
-        //this.createTextCanvas('test', this.pinch)
     }
 
     bindEvents() {
@@ -117,7 +111,6 @@ window.LyricsPlayer = class {
         this.updateCurrentIndex(elapsedMs);
         
         
-        
         // Display current lyric
         const lyric = this.lyrics[this.currentIndex];
         this.timeLeft = lyric.duration;
@@ -128,27 +121,28 @@ window.LyricsPlayer = class {
             timeLeft += this.lyrics[i].duration;
         }
 
-        if (this.callFadeIn) {
-            var lyricContainer = document.getElementById('lyrics-container');
-            lyricContainer.innerHTML = '';
-            this.pinch = -1
-            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
-            this.callFadeIn = false;
-
-        }
-
-        // Slow the animation speed
-        if (this.pinch < 0) {
-            var lyricContainer = document.getElementById('lyrics-container');
-            lyricContainer.innerHTML = '';
-            this.pinch += 0.15
-            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
-        }
-
         // Create and add new lyric line
         const lyricElement = document.createElement('div');
         lyricElement.className = 'lyric-line';
         lyricElement.textContent = lyric.text || ' ';
+
+        // Clear main lyrics only
+        if (this.callFadeIn) {
+            this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
+            this.lyricsDisplay.appendChild(lyricElement);
+            // Trigger fade in animation on at start
+            setTimeout(() => {
+                lyricElement.classList.add('active');
+            }, 100);
+            this.callFadeIn = false;
+        }
+
+
+        if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
+            if (!this.lyricsDisplay.querySelector('.lyric-line').classList.contains('fadeout')) {
+                this.lyricsDisplay.querySelector('.lyric-line').classList.add('fadeout')
+            }
+        }
 
         this.frameNumber++;
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
@@ -174,7 +168,6 @@ window.LyricsPlayer = class {
         if (newIndex !== this.currentIndex) {
             this.currentIndex = newIndex;
             this.callFadeIn = true;
-            this.frameNumber = 0;
         }
     }
 
@@ -213,30 +206,6 @@ window.LyricsPlayer = class {
             this.reset();
         }, 3000);
     }
-
-    createTextCanvas(lyric, pinch) {
-        var canvas = fx.canvas();
-        var textCanvas = document.createElement('canvas');
-        textCanvas.width = 2000;  // Adjust based on your needs
-        textCanvas.height = 400; // Adjust based on your needs
-        var ctx = textCanvas.getContext('2d');
-        // Draw text on the temporary canvas
-        ctx.fillStyle = '#ffffff'; // White text
-        ctx.font = 'bold 80px Arial'; // Customize font
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        console.log(lyric)
-        ctx.fillText(lyric, textCanvas.width / 2, textCanvas.height / 2);
-
-        // Convert the text canvas into a glfx texture
-        var texture = canvas.texture(textCanvas);
-        canvas.draw(texture)
-            .bulgePinch(textCanvas.width / 2, textCanvas.height / 2, 1000, pinch)
-            .update();
-        // Replace an existing element (or append to body)
-        var container = document.getElementById('lyrics-container'); // A div where you want the effect
-        container.appendChild(canvas);
-    }
 }
 
 window.initLyricAnimation = function(title, artist, lyricData) {
@@ -250,21 +219,4 @@ window.initLyricAnimation = function(title, artist, lyricData) {
     lyricPlayer.timeLeft = lyricPlayer.lyrics[0].duration;
     // For progress bar
     lyricPlayer.totalDuration = lyricPlayer.lyrics.reduce((sum, lyric) => sum + lyric.duration, 0);
-}
-
-
-function isChineseChar(char) {
-    const cp = char.codePointAt(0);
-    return (
-        (0x4E00 <= cp && cp <= 0x9FFF) ||
-        (0x3400 <= cp && cp <= 0x4DBF) ||
-        (0x20000 <= cp && cp <= 0x2A6DF) ||
-        (0x2A700 <= cp && cp <= 0x2B73F) ||
-        (0x2B740 <= cp && cp <= 0x2B81F) ||
-        (0x2B820 <= cp && cp <= 0x2CEAF) ||
-        (0x2CEB0 <= cp && cp <= 0x2EBEF) ||
-        (0x30000 <= cp && cp <= 0x3134F) ||
-        (0x31350 <= cp && cp <= 0x323AF) ||
-        (0xF900 <= cp && cp <= 0xFAFF)
-    );
 }

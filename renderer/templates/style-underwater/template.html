@@ -8,38 +8,6 @@
 
 </head>
 <body>
-    <!-- 1) SVG filter definition -->
-    <svg width="0" height="0" style="position: absolute">
-        <filter id="water">
-            <!-- feTurbulence creates a noise texture -->
-            <feTurbulence
-                id="turb"
-                type="fractalNoise"
-                baseFrequency="0.02"
-                numOctaves="1"
-                seed="2"
-                result="turbulence"
-            />
-            <!-- Displace the incoming graphic by that noise -->
-            <feDisplacementMap
-                id="displacement"
-                in="SourceGraphic"
-                in2="turbulence"
-                scale="1"
-                xChannelSelector="R"
-                yChannelSelector="G"
-            />
-
-            <!-- Add Gaussian blur for a soft underwater effect -->
-            <feGaussianBlur
-                id="blur"
-                stdDeviation="1" 
-                in="displacement"    
-                result="blurred"
-            />
-        </filter>
-    </svg>
-
     <script src="./templates/style-underwater/script.js"></script>
     <div class="container">
         <div class="header">
@@ -54,6 +22,7 @@
 
 
         <div class="lyrics-container" id="lyrics-container">
+            <div id="lyricsDisplay" class="lyrics-line"></div>
         </div>
 
         <div class="progress-container">

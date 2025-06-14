@@ -109,44 +109,6 @@ body {
     display: flex;
 }
 
-.lyric-background {
-    /* Make the filter affect this element */
-    filter: url(#water);
-    /* Ensure the text is rendered to SVG so filter can apply */
-    transform: translateZ(0);
-    pointer-events: none;
-    position: absolute;
-    font-size: 20rem;
-    color: rgba(0, 0, 0, 0.047);
-    margin: 1rem 0;
-    opacity: 0;
-    transform: translate(0%, -50%) translateY(30px);
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    line-height: 1.4;
-    display: flex;
-    /* Make text unselectable */
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-.lyric-background.active {
-    color: #1414141a;
-    opacity: 1;
-    transform: translateY(0);
-    text-shadow: 0 0 20px rgba(39, 39, 39, 0.1);
-    font-weight: bold;
-    scale: 1.05;
-}
-
-.lyric-background.fadeout {
-    opacity: 0.3;
-    transform: translateY(20px);
-}
-
-
 .lyric-line {
     pointer-events: none;
     position: absolute;
