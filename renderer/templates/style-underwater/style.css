@@ -111,7 +111,7 @@ body {
 
 .lyric-line {
     pointer-events: none;
-    position: absolute;
+    position: relative;
     font-size: 5.0rem;
     color: rgba(255, 255, 255, 0.6);
     margin: 1rem 0;
@@ -132,17 +132,20 @@ body {
 .lyric-line.active {
     color: #fff;
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) skew(0) translateX(0);
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
     font-weight: bold;
     scale: 1.05;
 }
 
-.lyric-line.fadeout {
+.lyric-line.fadeout1 {
     opacity: 0.3;
-    transform: translateY(-20px);
+    transform: translateX(-50px) translateY(-20px) skew(2deg, -1deg) ;
 }
-
+.lyric-line.fadeout2 {
+    opacity: 0.3;
+    transform: translateX(50px) translateY(-20px) skew(-2deg, 1deg) ;
+}
 
 /* Progress Bar */
 .progress-container {
@@ -186,37 +189,4 @@ body {
     animation: pulse 2s ease-in-out infinite;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .song-title {
-        font-size: 2rem;
-    }
-    
-    .lyric-line {
-        font-size: 1.4rem;
-    }
-    
-    .play-btn {
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-    }
-}
 
-/* Loading Animation */
-.loading {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255,255,255,.3);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}

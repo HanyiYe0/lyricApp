@@ -19,6 +19,22 @@ window.LyricsPlayer = class {
         this.pausedDuration = 0;
         this.lastUpdateTime = 0;
 
+
+        // Warp
+        // Lyric text areaAdd commentMore actions
+        this.pinch = -0.1
+        this.canvas = fx.canvas();
+        this.textCanvas = document.createElement('canvas');
+        this.textCanvas.width = 2000;  // Adjust based on your needs
+        this.textCanvas.height = 400; // Adjust based on your needs
+        this.ctx = this.textCanvas.getContext('2d');
+        // Draw text on the temporary canvas
+        this.ctx.fillStyle = '#ffffff'; // White text
+        this.ctx.font = 'bold 80px Arial'; // Customize font
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        //this.createTextCanvas('test', this.pinch)
+
         this.bindEvents();
         this.reset();
     }
@@ -121,28 +137,27 @@ window.LyricsPlayer = class {
             timeLeft += this.lyrics[i].duration;
         }
 
+        // Clear main lyrics only
+        if (this.callFadeIn) {
+            var lyricContainer = document.getElementById('lyrics-container');
+            lyricContainer.innerHTML = '';
+            this.pinch = -1
+            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
+            this.callFadeIn = false;
+        }
+
+        // Slow the animation speedAdd commentMore actions
+        if (this.pinch < 0) {
+            var lyricContainer = document.getElementById('lyrics-container');
+            lyricContainer.innerHTML = '';
+            this.pinch += 0.05
+            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
+        }
+
         // Create and add new lyric line
         const lyricElement = document.createElement('div');
         lyricElement.className = 'lyric-line';
         lyricElement.textContent = lyric.text || ' ';
-
-        // Clear main lyrics only
-        if (this.callFadeIn) {
-            this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
-            this.lyricsDisplay.appendChild(lyricElement);
-            // Trigger fade in animation on at start
-            setTimeout(() => {
-                lyricElement.classList.add('active');
-            }, 100);
-            this.callFadeIn = false;
-        }
-
-
-        if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
-            if (!this.lyricsDisplay.querySelector('.lyric-line').classList.contains('fadeout')) {
-                this.lyricsDisplay.querySelector('.lyric-line').classList.add('fadeout')
-            }
-        }
 
         this.frameNumber++;
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
@@ -168,6 +183,7 @@ window.LyricsPlayer = class {
         if (newIndex !== this.currentIndex) {
             this.currentIndex = newIndex;
             this.callFadeIn = true;
+            this.frameNumber = 0;
         }
     }
 
@@ -205,6 +221,19 @@ window.LyricsPlayer = class {
         setTimeout(() => {
             this.reset();
         }, 3000);
+    }
+
+    createTextCanvas(lyric, pinch) {
+        this.ctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height)
+        this.ctx.fillText(lyric, this.textCanvas.width / 2, this.textCanvas.height / 2);
+        // Convert the text canvas into a glfx texture
+        var texture = this.canvas.texture(this.textCanvas);
+        this.canvas.draw(texture)
+            .bulgePinch(this.textCanvas.width / 2, this.textCanvas.height / 2, 1000, pinch)
+            .update();
+        // Replace an existing element (or append to body)
+        var container = document.getElementById('lyrics-container'); // A div where you want the effect
+        container.appendChild(this.canvas);
     }
 }
 
