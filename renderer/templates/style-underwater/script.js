@@ -23,14 +23,18 @@ window.LyricsPlayer = class {
         // Warp
         // Lyric text areaAdd commentMore actions
         this.pinch = -0.1
+        this.blur = 0.3
         this.canvas = fx.canvas();
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.width = 2000;  // Adjust based on your needs
         this.textCanvas.height = 400; // Adjust based on your needs
         this.ctx = this.textCanvas.getContext('2d');
+        // For bobbing effect
+        this.scaleSize = 1;
+        this.growing = true;
         // Draw text on the temporary canvas
         this.ctx.fillStyle = '#ffffff'; // White text
-        this.ctx.font = 'bold 80px Arial'; // Customize font
+        this.ctx.font = 'bold 90px Arial'; // Customize font
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         //this.createTextCanvas('test', this.pinch)
@@ -141,23 +145,35 @@ window.LyricsPlayer = class {
         if (this.callFadeIn) {
             var lyricContainer = document.getElementById('lyrics-container');
             lyricContainer.innerHTML = '';
+            // Reset pinch effect
             this.pinch = -1
-            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
+            // Reset font size
+            this.scaleSize = 1
+            // Reset blur
+            this.blur = 20
             this.callFadeIn = false;
         }
 
-        // Slow the animation speedAdd commentMore actions
+        // Bluring Effect
+        if (this.blur > 0) {
+            this.blur = Math.max(this.blur - 1, 0)
+        }
+        // Pinch Warp effect
         if (this.pinch < 0) {
             var lyricContainer = document.getElementById('lyrics-container');
             lyricContainer.innerHTML = '';
-            this.pinch += 0.05
-            this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch)
+            this.pinch = Math.min(this.pinch + 0.05, 0)
+        } else {
+            // Underwater bobbing effect
+            if (this.growing) {
+                this.scaleSize += 0.001;
+                if (this.scaleSize >= 1.02) this.growing = false;
+            } else {
+                this.scaleSize -= 0.001;
+                if (this.scaleSize <= 1) this.growing = true;
+            }
         }
-
-        // Create and add new lyric line
-        const lyricElement = document.createElement('div');
-        lyricElement.className = 'lyric-line';
-        lyricElement.textContent = lyric.text || ' ';
+        this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch, this.blur, this.scaleSize)
 
         this.frameNumber++;
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
@@ -223,16 +239,36 @@ window.LyricsPlayer = class {
         }, 3000);
     }
 
-    createTextCanvas(lyric, pinch) {
-        this.ctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height)
+    createTextCanvas(lyric, pinch, blur, scale) {
+        // Clear and reset transformations
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.ctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height);
+        
+        // Save context state
+        this.ctx.save();
+        
+        // Apply transformations from center
+        this.ctx.translate(this.textCanvas.width / 2, this.textCanvas.height / 2);
+        this.ctx.scale(scale, scale);
+        this.ctx.translate(-this.textCanvas.width / 2, -this.textCanvas.height / 2);
+        
+        // Draw text
+        this.ctx.font = 'bold 90px Arial';
         this.ctx.fillText(lyric, this.textCanvas.width / 2, this.textCanvas.height / 2);
-        // Convert the text canvas into a glfx texture
+        
+        // Restore context
+        this.ctx.restore();
+        
+        // Apply effects
         var texture = this.canvas.texture(this.textCanvas);
         this.canvas.draw(texture)
             .bulgePinch(this.textCanvas.width / 2, this.textCanvas.height / 2, 10000, pinch)
+            .triangleBlur(blur)
             .update();
-        // Replace an existing element (or append to body)
-        var container = document.getElementById('lyrics-container'); // A div where you want the effect
+        
+        // Clear previous canvas and append new one
+        var container = document.getElementById('lyrics-container');
+        container.innerHTML = '';
         container.appendChild(this.canvas);
     }
 }
