@@ -229,7 +229,7 @@ window.LyricsPlayer = class {
         // Convert the text canvas into a glfx texture
         var texture = this.canvas.texture(this.textCanvas);
         this.canvas.draw(texture)
-            .bulgePinch(this.textCanvas.width / 2, this.textCanvas.height / 2, 1000, pinch)
+            .bulgePinch(this.textCanvas.width / 2, this.textCanvas.height / 2, 10000, pinch)
             .update();
         // Replace an existing element (or append to body)
         var container = document.getElementById('lyrics-container'); // A div where you want the effect
