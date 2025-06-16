@@ -112,6 +112,14 @@ window.LyricsPlayer = class {
         this.playBtn.textContent = '▶ Play';
         this.playBtn.classList.remove('playing');
         this.progressBar.style.width = '0%';
+
+        // Clear and reset transformations
+        var container = document.getElementById('lyrics-container');
+        container.innerHTML = '';
+
+        this.startTimestamp = 0;
+        this.pausedDuration = 0;
+        this.lastUpdateTime = 0;
     }
 
     startAnimation() {
@@ -158,6 +166,8 @@ window.LyricsPlayer = class {
             this.cordY = 300
             // Reset font size
             this.fontSize = 90;
+            // Reset ease out aniamtion
+            this.easePercentage = 0
             this.callFadeIn = false;
         }
 
@@ -169,12 +179,13 @@ window.LyricsPlayer = class {
         }
 
         // Fade away animation
-        if (this.cordY <= 150) {
-            if (this.fontSize >= 40) {
-                this.fontSize--;
+        if (this.cordY <= 170) {
+            // blur lyrics later
+            if (this.cordY <= 140) {
+                this.blur -= 1.0 * this.easePercentage ** 0.5
             }
-            this.blur -= 1.5
-            this.pinch -= 0.15
+            this.pinch -= 0.15 * this.easePercentage ** 0.5
+            this.easePercentage = Math.min(this.easePercentage + 0.05, 1)
         } else {
             // Bluring Effect
             if (this.blur > 0) {
