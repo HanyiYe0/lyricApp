@@ -154,24 +154,29 @@ window.LyricsPlayer = class {
             // Reset blur
             this.blur = 20
             // Reset coordinate y
-            this.cordY = 400
+            this.cordY = 300
             this.callFadeIn = false;
         }
 
         // Text moving effect
         if (this.cordY >= 90) {
-            this.cordY = Math.max(this.cordY - 1, 90)
+            this.cordY = 400 - (310 * Math.min((lyric.duration - timeLeft + elapsedMs) / lyric.duration, 1))
         }
 
         // Bluring Effect
         if (this.blur > 0) {
-            this.blur = Math.max(this.blur - 1, 0)
+            this.blur = Math.max(this.blur - 1.1, 0)
         }
         // Pinch Warp effect
         if (this.pinch < 0) {
             var lyricContainer = document.getElementById('lyrics-container');
             lyricContainer.innerHTML = '';
-            this.pinch = Math.min(this.pinch + 0.05, 0)
+            this.pinch = Math.min(this.pinch + 0.1, 0)
+
+            // // Text moving effect
+            // if (this.cordY >= 90) {
+            //     this.cordY = Math.max(this.cordY - (timeLeft - elapsedMs) * (310 / lyric.duration), 90)
+            // }
         } else {
             // Underwater bobbing effect
             if (this.growing) {
@@ -181,8 +186,15 @@ window.LyricsPlayer = class {
                 this.scaleSize -= 0.001;
                 if (this.scaleSize <= 1) this.growing = true;
             }
+
+            // // Text moving effect
+            // if (this.cordY >= 90) {
+            //     this.cordY = Math.max(this.cordY - (310 / (timeLeft - elapsedMs)), 90)
+            // }
         }
         this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch, this.blur, this.scaleSize)
+
+        //console.log(elapsedMs)
 
         this.frameNumber++;
         this.animationFrameLyrics = requestAnimationFrame(() => this.displayLyric());
