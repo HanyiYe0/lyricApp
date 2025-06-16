@@ -262,18 +262,9 @@ window.LyricsPlayer = class {
 
     onComplete() {
         this.isPlaying = false;
-        this.playBtn.textContent = '✓ Complete';
+        this.playBtn.textContent = '▶ Play';
         this.playBtn.classList.remove('playing');
-        
-        // Show completion message
-        this.lyricsDisplay.innerHTML = `
-            <div class="lyric-line active">Thank you for listening!</div>
-        `;
-        
-        // Reset after a delay
-        setTimeout(() => {
-            this.reset();
-        }, 3000);
+        this.reset();
     }
 
     createTextCanvas(lyric, pinch, blur, scale) {
