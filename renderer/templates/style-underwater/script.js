@@ -27,8 +27,10 @@ window.LyricsPlayer = class {
         this.canvas = fx.canvas();
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.width = 2000;  // Adjust based on your needs
-        this.textCanvas.height = 400; // Adjust based on your needs
+        this.textCanvas.height = 600; // Adjust based on your needs
         this.ctx = this.textCanvas.getContext('2d');
+        // For moving effect
+        this.cordY = 90
         // For bobbing effect
         this.scaleSize = 1;
         this.growing = true;
@@ -151,7 +153,14 @@ window.LyricsPlayer = class {
             this.scaleSize = 1
             // Reset blur
             this.blur = 20
+            // Reset coordinate y
+            this.cordY = 400
             this.callFadeIn = false;
+        }
+
+        // Text moving effect
+        if (this.cordY >= 90) {
+            this.cordY = Math.max(this.cordY - 1, 90)
         }
 
         // Bluring Effect
@@ -254,7 +263,7 @@ window.LyricsPlayer = class {
         
         // Draw text
         this.ctx.font = 'bold 90px Arial';
-        this.ctx.fillText(lyric, this.textCanvas.width / 2, this.textCanvas.height / 2);
+        this.ctx.fillText(lyric, this.textCanvas.width / 2, this.cordY);
         
         // Restore context
         this.ctx.restore();
