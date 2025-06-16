@@ -181,7 +181,7 @@ window.LyricsPlayer = class {
         // Fade away animation
         if (this.cordY <= 170) {
             // blur lyrics later
-            if (this.cordY <= 140) {
+            if (this.cordY <= 150) {
                 this.blur -= 1.0 * this.easePercentage ** 0.5
             }
             this.pinch -= 0.15 * this.easePercentage ** 0.5
@@ -291,8 +291,36 @@ window.LyricsPlayer = class {
         
         // Draw text
         this.ctx.font = `bold ${this.fontSize}px Arial`;
-        this.ctx.fillText(lyric, this.textCanvas.width / 2, this.cordY);
+        // Calculate maximum width (80% of canvas width)
+        const maxWidth = this.textCanvas.width * 0.8;
+        const lineHeight = this.fontSize * 1.2; // Adjust line height as needed
+        // First measure how many lines we'll have
+        const words = lyric.split(' ');
+        let line = '';
+        const lines = [];
         
+        for(let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = this.ctx.measureText(testLine);
+            
+            if (metrics.width > maxWidth && n > 0) {
+                lines.push(line.trim());
+                line = words[n] + ' ';
+            } else {
+                line = testLine;
+            }
+        }
+        lines.push(line.trim());
+        const lineCount = lines.length;
+        
+        // Calculate starting Y position to center all lines vertically
+        const totalTextHeight = lineCount * lineHeight;
+        const startY = this.cordY - (totalTextHeight / 2) + (lineHeight / 2);
+        
+        // Draw all lines
+        for(let i = 0; i < lineCount; i++) {
+            this.ctx.fillText(lines[i], this.textCanvas.width / 2, startY + (i * lineHeight));
+        }
         // Restore context
         this.ctx.restore();
         
