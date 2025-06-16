@@ -121,33 +121,18 @@ window.LyricsPlayer = class {
 
         // Create and add new lyric line
         const lyricElement = document.createElement('div');
-        const lyricBackgroundElement = document.createElement('div');
         lyricElement.className = 'lyric-line';
         lyricElement.textContent = lyric.text || ' ';
-        
-        // Background text
-        lyricBackgroundElement.className = 'lyric-background';
-        var backgroundText = lyric.text.split(" ").pop()
-        backgroundText = backgroundText.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, '').replace(/\s+/g, ' ');
-        backgroundText = backgroundText.charAt(0).toUpperCase() + backgroundText.slice(1).toLowerCase();
-        
-        // Check for Chinese/Other Language characters
-        if (isChineseChar(backgroundText.charAt(0)) && backgroundText.length >= 2) {
-            backgroundText = backgroundText.charAt(backgroundText.length - 2).toUpperCase() + backgroundText.charAt(backgroundText.length - 1)
-        }
-        lyricBackgroundElement.textContent = backgroundText;
+        lyricElement.setAttribute('data-text', lyric.text || ' '); // Add this line
         
 
         // Clear main lyrics only
         if (this.callFadeIn) {
             this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
-            this.lyricsDisplay.querySelectorAll('.lyric-background').forEach(el => el.remove());
-            this.lyricsDisplay.appendChild(lyricBackgroundElement);
             this.lyricsDisplay.appendChild(lyricElement);
             // Trigger fade in animation on at start
             setTimeout(() => {
                 lyricElement.classList.add('active');
-                lyricBackgroundElement.classList.add('active');
             }, 100);
             this.callFadeIn = false;
         }
@@ -156,9 +141,6 @@ window.LyricsPlayer = class {
         if (elapsedMs >= (timeLeft - 500) && this.isPlaying) {
             if (!this.lyricsDisplay.querySelector('.lyric-line').classList.contains('fadeout')) {
                 this.lyricsDisplay.querySelector('.lyric-line').classList.add('fadeout')
-            }
-            if (!this.lyricsDisplay.querySelector('.lyric-background').classList.contains('fadeout')) {
-                this.lyricsDisplay.querySelector('.lyric-background').classList.add('fadeout')
             }
         }
 
