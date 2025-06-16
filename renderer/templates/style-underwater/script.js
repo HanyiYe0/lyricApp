@@ -36,7 +36,8 @@ window.LyricsPlayer = class {
         this.growing = true;
         // Draw text on the temporary canvas
         this.ctx.fillStyle = '#ffffff'; // White text
-        this.ctx.font = 'bold 90px Arial'; // Customize font
+        this.fontSize = 90;
+        this.ctx.font = `bold ${this.fontSize}px Arial`; // Customize font
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         //this.createTextCanvas('test', this.pinch)
@@ -155,28 +156,37 @@ window.LyricsPlayer = class {
             this.blur = 20
             // Reset coordinate y
             this.cordY = 300
+            // Reset font size
+            this.fontSize = 90;
             this.callFadeIn = false;
         }
 
         // Text moving effect
         if (this.cordY >= 90) {
             this.cordY = 400 - (310 * Math.min((lyric.duration - timeLeft + elapsedMs) / lyric.duration, 1))
+
+            
         }
 
-        // Bluring Effect
-        if (this.blur > 0) {
-            this.blur = Math.max(this.blur - 1.1, 0)
+        // Fade away animation
+        if (this.cordY <= 150) {
+            if (this.fontSize >= 40) {
+                this.fontSize--;
+            }
+            this.blur -= 1.5
+            this.pinch -= 0.15
+        } else {
+            // Bluring Effect
+            if (this.blur > 0) {
+                this.blur = Math.max(this.blur - 1.1, 0)
+            }
         }
+
         // Pinch Warp effect
         if (this.pinch < 0) {
             var lyricContainer = document.getElementById('lyrics-container');
             lyricContainer.innerHTML = '';
             this.pinch = Math.min(this.pinch + 0.1, 0)
-
-            // // Text moving effect
-            // if (this.cordY >= 90) {
-            //     this.cordY = Math.max(this.cordY - (timeLeft - elapsedMs) * (310 / lyric.duration), 90)
-            // }
         } else {
             // Underwater bobbing effect
             if (this.growing) {
@@ -186,11 +196,6 @@ window.LyricsPlayer = class {
                 this.scaleSize -= 0.001;
                 if (this.scaleSize <= 1) this.growing = true;
             }
-
-            // // Text moving effect
-            // if (this.cordY >= 90) {
-            //     this.cordY = Math.max(this.cordY - (310 / (timeLeft - elapsedMs)), 90)
-            // }
         }
         this.createTextCanvas(this.lyrics[this.currentIndex].text, this.pinch, this.blur, this.scaleSize)
 
@@ -274,7 +279,7 @@ window.LyricsPlayer = class {
         this.ctx.translate(-this.textCanvas.width / 2, -this.textCanvas.height / 2);
         
         // Draw text
-        this.ctx.font = 'bold 90px Arial';
+        this.ctx.font = `bold ${this.fontSize}px Arial`;
         this.ctx.fillText(lyric, this.textCanvas.width / 2, this.cordY);
         
         // Restore context
@@ -283,7 +288,7 @@ window.LyricsPlayer = class {
         // Apply effects
         var texture = this.canvas.texture(this.textCanvas);
         this.canvas.draw(texture)
-            .bulgePinch(this.textCanvas.width / 2, this.textCanvas.height / 2, 10000, pinch)
+            .bulgePinch(this.textCanvas.width / 2, this.cordY, 10000, pinch)
             .triangleBlur(blur)
             .update();
         
