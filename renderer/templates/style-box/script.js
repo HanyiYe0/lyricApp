@@ -4,6 +4,7 @@ window.LyricsPlayer = class {
         this.currentIndex = 0;
         this.isPlaying = false;
         this.callFadeIn = true;
+        this.currentWords = [];
 
         // Dom Stuff
         this.playBtn = document.getElementById('playBtn');
@@ -82,7 +83,6 @@ window.LyricsPlayer = class {
 
         // Clear html elements
         this.lyricsDisplay.querySelectorAll('.lyric-line').forEach(el => el.remove());
-        this.lyricsDisplay.querySelectorAll('.lyric-background').forEach(el => el.remove());
         this.callFadeIn = true;
         this.currentIndex = 0;
         this.playBtn.textContent = '▶ Play';
@@ -123,7 +123,6 @@ window.LyricsPlayer = class {
         const lyricElement = document.createElement('div');
         lyricElement.className = 'lyric-line';
         lyricElement.textContent = lyric.text || ' ';
-        lyricElement.setAttribute('data-text', lyric.text || ' '); // Add this line
         
 
         // Clear main lyrics only
@@ -135,6 +134,10 @@ window.LyricsPlayer = class {
                 lyricElement.classList.add('active');
             }, 100);
             this.callFadeIn = false;
+
+            // Split the lyric line into the words
+            this.currentWords = this.splitWords(this.lyrics[this.currentIndex].text)
+            console.log(this.currentWords)
         }
 
 
@@ -196,6 +199,24 @@ window.LyricsPlayer = class {
         this.playBtn.classList.remove('playing');
         this.reset();
     }
+
+    splitWords(lyricLine) {
+        if (!lyricLine || !lyricLine.trim()) {
+            return [];
+        }
+        
+        lyricLine = lyricLine.trim();
+        
+        let pattern;
+        pattern = /[\u4e00-\u9fff]|[\u3400-\u4dbf]|[\uf900-\ufaff]|[\u3040-\u309f]|[\u30a0-\u30ff]|[\p{L}\p{N}\p{P}\p{S}]+/gu;
+        
+        let words = lyricLine.match(pattern) || [];
+        // Apply filters
+        words = words.filter(word => word.trim() && word.length >= 1);
+        
+        return words;
+    }
+
 }
 
 window.initLyricAnimation = function(title, artist, lyricData) {
